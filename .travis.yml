@@ -1,0 +1,39 @@
+branches:
+  only:
+  - dev
+
+language: cpp
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      install:
+        - ./installers/install_bazel.sh
+      script:
+        - bazel build //examples/...
+        - bazel test //...
+      after_failure:
+        - find bazel-out/ -name "test.log" | xargs cat
+    - os: osx
+      osx_image: xcode11.3
+      compiler: clang
+      install:
+        - ./installers/install_bazel.sh
+      script:
+        - bazel build //examples/...
+        - bazel test //...
+      after_failure:
+        - find bazel-out/ -name "test.log" | xargs cat
+    - os: windows
+      install:
+        - choco install bazel --version 1.2.0
+      script:
+        - bazel build ///examples/...
+        - bazel test ///...
+      after_failure:
+        - find bazel-out/ -name "test.log" | xargs cat
+
+notifications:
+    email:
+        on_success: always
+        on_failure: always

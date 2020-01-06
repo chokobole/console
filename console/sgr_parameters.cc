@@ -4,34 +4,34 @@
 
 #include "console/sgr_parameters.h"
 
-#include "absl/strings/str_cat.h"
+#include "absl/strings/substitute.h"
 
 namespace console {
 
 std::string Grayscale8(uint8_t level) {
   if (level > 24) return "";
-  return absl::StrCat("\e[38;5;", level + 232, "m");
+  return absl::Substitute("\e[38;5;$0m", level + 232);
 }
 
 std::string BgGrayscale8(uint8_t level) {
   if (level > 24) return "";
-  return absl::StrCat("\e[48;5;", level + 232, "m");
+  return absl::Substitute("\e[48;5;$0m", level + 232);
 }
 
 std::string Rgb8(uint8_t r, uint8_t g, uint8_t b) {
-  return absl::StrCat("\e[38;5;", Ansi8BitColor(r, g, b), "m");
+  return absl::Substitute("\e[38;5;$0m", Ansi8BitColor(r, g, b));
 }
 
 std::string BgRgb8(uint8_t r, uint8_t g, uint8_t b) {
-  return absl::StrCat("\e[48;5;", Ansi8BitColor(r, g, b), "m");
+  return absl::Substitute("\e[48;5;$0m", Ansi8BitColor(r, g, b));
 }
 
 std::string Rgb24(uint8_t r, uint8_t g, uint8_t b) {
-  return absl::StrCat("\e[38;2;", r, ";", g, ";", b, "m");
+  return absl::Substitute("\e[38;2;$0;$1;$2m", r, g, b);
 }
 
 std::string BgRgb24(uint8_t r, uint8_t g, uint8_t b) {
-  return absl::StrCat("\e[48;2;", r, ";", g, ";", b, "m");
+  return absl::Substitute("\e[48;2;$0;$1;$2m", r, g, b);
 }
 
 uint8_t Ansi8BitColor(uint8_t r, uint8_t g, uint8_t b) {

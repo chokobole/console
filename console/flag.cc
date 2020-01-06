@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "absl/strings/ascii.h"
-#include "absl/strings/str_cat.h"
+#include "absl/strings/substitute.h"
 #include "base/strings/string_util.h"
 
 namespace console {
@@ -279,16 +279,17 @@ bool FlagParser::Validate() {
     }
 
     if (flag->is_positional() && flag->is_optional()) {
-      error_message_ = absl::StrCat(
-          "\"", flag->name(),
-          "\" is positional and optional, please choose either one of them.");
+      error_message_ = absl::Substitute(
+          "\"$0\" is positional and optional, please choose either one of "
+          "them.",
+          flag->name());
       return false;
     }
 
     if (flag->IsSubParser()) {
       if (flag->is_optional()) {
-        error_message_ = absl::StrCat("Subparser \"", flag->display_name(),
-                                      "\" should be positional.");
+        error_message_ = absl::Substitute(
+            "Subparser \"$0\" should be positional.", flag->display_name());
         return false;
       }
 
@@ -300,9 +301,9 @@ bool FlagParser::Validate() {
     } else {
       if (flag->is_positional()) {
         if (!is_positional) {
-          error_message_ =
-              absl::StrCat("\"", flag->display_name(),
-                           "\" should be before any optional arguments.");
+          error_message_ = absl::Substitute(
+              "\"$0\" should be before any optional arguments.",
+              flag->display_name());
           return false;
         }
       } else {
@@ -312,10 +313,10 @@ bool FlagParser::Validate() {
 
     if (!flag->NeedsValue()) {
       if (flag->is_positional()) {
-        error_message_ =
-            absl::StrCat("\"", flag->name(),
-                         "\" can't parse a value, how about considering using "
-                         "set_short_name() or set_long_name()?");
+        error_message_ = absl::Substitute(
+            "\"$0\" can't parse a value, how about considering using "
+            "set_short_name() or set_long_name()?",
+            flag->name());
         return false;
       }
     }
@@ -325,11 +326,11 @@ bool FlagParser::Validate() {
     for (auto& flag : flags_) {
       if (flag->is_positional()) {
         if (!flag->IsSubParser()) {
-          error_message_ =
-              absl::StrCat("\"", flag->name(),
-                           "\" can't be positional if the parser has "
-                           "subparser, how about considering using "
-                           "set_short_name() or set_long_name()?");
+          error_message_ = absl::Substitute(
+              "\"$0\" can't be positional if the parser has "
+              "subparser, how about considering using "
+              "set_short_name() or set_long_name()?",
+              flag->name());
           return false;
         }
       }
@@ -360,7 +361,7 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
     absl::string_view arg = current();
     if (arg == "--help" || arg == "-h") {
       std::cerr << help_message() << std::endl;
-      error_message_ = absl::StrCat("Got \"", arg, "\".");
+      error_message_ = absl::Substitute("Got \"$0\".", arg);
       return false;
     }
 
@@ -405,16 +406,16 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
         target_flag->is_set_ = true;
         SubParser* sub_parser = reinterpret_cast<SubParser*>(target_flag);
         sub_parser->set_program_name(
-            absl::StrCat(program_name_, " ", target_flag->name()));
+            absl::Substitute("$0 $1", program_name_, target_flag->name()));
         return sub_parser->Parse(argc, argv, current_idx_ + 1);
       } else if (target_flag->is_positional()) {
         parsed = target_flag->ParseValue(arg, &reason);
         positional_parsed++;
       } else {
         if (target_flag->NeedsValue() && !ConsumeEqualOrProceed(&arg)) {
-          error_message_ =
-              absl::StrCat("\"", target_flag->display_name(),
-                           "\" is failed to parse: (reason: empty value ).");
+          error_message_ = absl::Substitute(
+              "\"$0\" is failed to parse: (reason: empty value ).",
+              target_flag->display_name());
           return false;
         }
         parsed = target_flag->ParseValue(arg, &reason);
@@ -423,18 +424,25 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
 
     if (!parsed) {
       if (target_flag) {
-        error_message_ =
-            absl::StrCat(target_flag->display_name(),
-                         " is failed to parse: (reason: ", reason, ").");
+        if (reason.empty()) {
+          error_message_ =
+              absl::Substitute("\"$0\" is failed to parse: (reason: unknown).",
+                               target_flag->display_name());
+        } else {
+          error_message_ =
+              absl::Substitute("\"$0\" is failed to parse: (reason: $1).",
+                               target_flag->display_name(), reason);
+        }
       } else {
         absl::string_view candidate_arg;
         bool found = FindTheMostSimilarFlag(arg, &candidate_arg);
         if (found) {
-          error_message_ =
-              absl::StrCat("met unknown argument: \"", arg,
-                           "\", maybe you mean \"", candidate_arg, "\"?");
+          error_message_ = absl::Substitute(
+              "met unknown argument: \"$0\", maybe you mean \"$1\"?", arg,
+              candidate_arg);
         } else {
-          error_message_ = absl::StrCat("met unknown argument: \"", arg, "\".");
+          error_message_ =
+              absl::Substitute("met unknown argument: \"$0\".", arg);
         }
       }
       return false;
@@ -446,8 +454,8 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
     for (auto& flag : flags_) {
       if (flag->is_optional()) continue;
       if (!flag->is_set()) {
-        error_message_ = absl::StrCat("\"", flag->display_name(),
-                                      "\" is positional, but not set.");
+        error_message_ = absl::Substitute("\"$0\" is positional, but not set.",
+                                          flag->name());
         return false;
       }
     }
@@ -455,8 +463,8 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
 
   for (auto& flag : flags_) {
     if (flag->is_required() && !flag->is_set()) {
-      error_message_ = absl::StrCat("\"", flag->display_name(),
-                                    "\" is required, but not set.");
+      error_message_ = absl::Substitute("\"$0\" is required, but not set.",
+                                        flag->display_name());
       return false;
     }
   }

@@ -175,8 +175,6 @@ class CONSOLE_EXPORT FlagParser {
   virtual std::string help_message();
 
  protected:
-  friend class FlagBase;
-
   absl::string_view current();
   bool ConsumeEqualOrProceed(absl::string_view* arg);
   void Proceed();

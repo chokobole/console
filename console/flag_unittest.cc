@@ -224,8 +224,9 @@ TEST(FlagParserTest, CustomParseValueCallback) {
   {
     const char* argv[] = {"program", "-a", "pig"};
     EXPECT_FALSE(parser.Parse(3, const_cast<char**>(argv)));
-    EXPECT_EQ(parser.error_message(),
-              "-a is failed to parse: (reason: pig is not either cat or dog).");
+    EXPECT_EQ(
+        parser.error_message(),
+        "\"-a\" is failed to parse: (reason: pig is not either cat or dog).");
   }
   {
     const char* argv[] = {"program", "-a", "cat"};

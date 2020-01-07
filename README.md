@@ -544,11 +544,11 @@ add_parser.AddFlag<console::Int32Flag>(&add.a).set_name("a").set_help(
     "number1 for add");
 add_parser.AddFlag<console::Int32Flag>(&add.b).set_name("b").set_help(
     "number2 for add");
-console::SubParser& sub_parser = flag_parser.AddSubParser();
-sub_parser.set_name("pow").set_help("pow");
-sub_parser.AddFlag<console::Int32Flag>(&pow.base).set_name("base").set_help(
+console::SubParser& pow_parser = flag_parser.AddSubParser();
+pow_parser.set_name("pow").set_help("pow");
+pow_parser.AddFlag<console::Int32Flag>(&pow.base).set_name("base").set_help(
     "base for pow");
-sub_parser.AddFlag<console::Int32Flag>(&pow.exponent)
+pow_parser.AddFlag<console::Int32Flag>(&pow.exponent)
     .set_name("exponent")
     .set_help("exponent for pow");
 ```

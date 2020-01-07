@@ -196,9 +196,7 @@ std::string FlagBase::display_help(int help_start) const {
 }
 
 std::string FlagBase::display_usage() const {
-  if (IsSubParser()) {
-    return "<command>";
-  } else if (is_positional()) {
+  if (is_positional()) {
     return name_;
   } else {
     std::stringstream ss;
@@ -450,7 +448,7 @@ bool FlagParser::Parse(int argc, char** argv, int from) {
     Proceed();
   }
 
-  if (positional_parsed < positional_argument) {
+  if (!has_subparser && positional_parsed < positional_argument) {
     for (auto& flag : flags_) {
       if (flag->is_optional()) continue;
       if (!flag->is_set()) {
@@ -518,11 +516,11 @@ std::string FlagParser::help_message() {
   ss << program_name_;
   size_t flag_start = program_name_.length();
   int remain_len = kDefaultLineWidth - flag_start;
-  bool met_surparser = false;
+  bool has_sub_parser = false;
   for (auto& flag : flags_) {
     if (flag->IsSubParser()) {
-      if (met_surparser) continue;
-      met_surparser = true;
+      has_sub_parser = true;
+      continue;
     }
     if (remain_len < 0) {
       ss << std::endl;
@@ -532,12 +530,11 @@ std::string FlagParser::help_message() {
     remain_len -= AppendAndDecreaseLength(ss, " ");
     remain_len -= AppendAndDecreaseLength(ss, flag->display_usage());
   }
+  if (has_sub_parser) {
+    remain_len -= AppendAndDecreaseLength(ss, " <command> <args>");
+  }
   ss << std::endl;
 
-  bool has_sub_parser = std::any_of(flags_.begin(), flags_.end(),
-                                    [](const std::unique_ptr<FlagBase>& flag) {
-                                      return flag->IsSubParser();
-                                    });
   if (has_sub_parser) {
     ss << std::endl << "Commands:" << std::endl << std::endl;
     for (auto& flag : flags_) {

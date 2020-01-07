@@ -13,9 +13,29 @@ struct Pow {
   int exponent;
 };
 
-int DoAdd(const Add& add) { return add.a + add.b; }
+void DoAdd(const Add& add, bool verbose) {
+  {
+    console::Stream stream;
+    stream.Green();
+    std::cout << "[ADD]: ";
+  }
+  if (verbose) {
+    std::cout << add.a << " + " << add.b << " = ";
+  }
+  std::cout << add.a + add.b << std::endl;
+}
 
-double DoPow(const Pow& pow) { return std::pow(pow.base, pow.exponent); }
+void DoPow(const Pow& pow, bool verbose) {
+  {
+    console::Stream stream;
+    stream.Green();
+    std::cout << "[POW]: ";
+  }
+  if (verbose) {
+    std::cout << pow.base << " ^ " << pow.exponent << " = ";
+  }
+  std::cout << std::pow(pow.base, pow.exponent) << std::endl;
+}
 
 int main(int argc, char** argv) {
 #if defined(OS_WIN)
@@ -32,11 +52,11 @@ int main(int argc, char** argv) {
       "number1 for add");
   add_parser.AddFlag<console::Int32Flag>(&add.b).set_name("b").set_help(
       "number2 for add");
-  console::SubParser& sub_parser = flag_parser.AddSubParser();
-  sub_parser.set_name("pow").set_help("pow");
-  sub_parser.AddFlag<console::Int32Flag>(&pow.base).set_name("base").set_help(
+  console::SubParser& pow_parser = flag_parser.AddSubParser();
+  pow_parser.set_name("pow").set_help("pow");
+  pow_parser.AddFlag<console::Int32Flag>(&pow.base).set_name("base").set_help(
       "base for pow");
-  sub_parser.AddFlag<console::Int32Flag>(&pow.exponent)
+  pow_parser.AddFlag<console::Int32Flag>(&pow.exponent)
       .set_name("exponent")
       .set_help("exponent for pow");
   bool verbose;
@@ -55,19 +75,12 @@ int main(int argc, char** argv) {
   }
 
   if (add_parser.is_set()) {
-    {
-      console::Stream stream;
-      stream.Green();
-      std::cout << "[ADD]: ";
-    }
-    std::cout << DoAdd(add) << std::endl;
+    DoAdd(add, verbose);
+  } else if (pow_parser.is_set()) {
+    DoPow(pow, verbose);
   } else {
-    {
-      console::Stream stream;
-      stream.Green();
-      std::cout << "[POW]: ";
-    }
-    std::cout << DoPow(pow) << std::endl;
+    std::cerr << flag_parser.help_message() << std::endl;
+    return 1;
   }
 
   return 0;

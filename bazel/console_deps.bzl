@@ -15,8 +15,9 @@ def console_deps():
     if not native.existing_rule("com_chokobole_color"):
         http_archive(
             name = "com_chokobole_color",
-            strip_prefix = "color-dev",
+            sha256 = "14d43ab7723db5f70586ab993d21467489307da18f8fe5e28aa3ee335a247f3b",
+            strip_prefix = "color-703ae9e1a30868cecd6bb0962c475a15c656b109",
             urls = [
-                "https://github.com/chokobole/color/archive/dev.zip",
+                "https://github.com/chokobole/color/archive/703ae9e1a30868cecd6bb0962c475a15c656b109.zip",
             ],
         )

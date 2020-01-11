@@ -1,5 +1,11 @@
-#include <cmath>
+// Copyright (c) 2020 The Console Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+#include <cmath>
+#include <iostream>
+
+#include "console/autocompletion.h"
 #include "console/flag.h"
 #include "console/stream.h"
 
@@ -63,6 +69,9 @@ int main(int argc, char** argv) {
   flag_parser.AddFlag<console::BoolFlag>(&verbose)
       .set_long_name("--verbose")
       .set_help("verbose!");
+
+  // Uncomment if you want to generate json file used by console-autocomplete!
+  // console::Autocompletion::WriteToJson(flag_parser, "sub_parser.json");
 
   if (!flag_parser.Parse(argc, argv)) {
     {

@@ -30,6 +30,7 @@ A C++ collection of library for console application.
       - [Vector Flag](#vector-flag)
       - [Custom Flag](#custom-flag)
       - [SubParser](#subparser)
+      - [Autocompletion](#autocompletion)
 
 ## How to use
 
@@ -358,6 +359,7 @@ int main() {
 * Explaniable
 * Customizable
 * Composable
+* Support autocomplete
 
 Let's see a simple example like below. You can find the full code in [examples/simple_flag.cc](examples/simple_flag.cc)
 
@@ -432,7 +434,8 @@ flag_parser.AddFlag<console::Flag<std::vector<int>>>(&numbers)
     .set_short_name("-n")
     .set_long_name("--number")
     .set_help("numbers for add, you can accumulate!")
-    .set_required();
+    .set_required()
+    .set_sequential();
 ```
 
 Then you can use the program like below.
@@ -575,4 +578,21 @@ $ bazel-bin/examples/sub_parser pow 1 2
 [POW]: 1
 ```
 
+#### Autocompletion
 
+![resources/demo3.gif](resources/demo3.gif)
+
+```bash
+npm install -g console-autocompletion
+```
+
+If you want to apply bash autocompletion, you just include one header `console/autocompletion.h`, and generate json file  using `console::Autocompletion::WriteToJson(flag_parser, filename);`. Using this one, you can feed the information of flag parser to this npm package [console-autocompletion](https://www.npmjs.com/package/console-autocompletion) like below.
+
+```bash
+mkdir ~/.console-autocompletion
+cp /path/to/json ~/.console-autocompletion/
+
+alias program_name=/path/to/program # Maybe you don't have to do this
+console-autocompletion-installer program_name bash_completion
+source bash_completion
+```

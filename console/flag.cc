@@ -150,6 +150,11 @@ FlagBase& FlagBase::set_required() {
   return *this;
 }
 
+FlagBase& FlagBase::set_sequential() {
+  is_sequential_ = true;
+  return *this;
+}
+
 const std::string& FlagBase::short_name() const { return short_name_; }
 
 const std::string& FlagBase::long_name() const { return long_name_; }
@@ -158,6 +163,10 @@ const std::string& FlagBase::name() const { return name_; }
 
 const std::string& FlagBase::help() const { return help_; }
 
+bool FlagBase::is_required() const { return is_required_; }
+
+bool FlagBase::is_sequential() const { return is_sequential_; }
+
 bool FlagBase::is_positional() const { return !name_.empty(); }
 
 bool FlagBase::is_optional() const {
@@ -165,8 +174,6 @@ bool FlagBase::is_optional() const {
 }
 
 bool FlagBase::is_set() const { return is_set_; }
-
-bool FlagBase::is_required() const { return is_required_; }
 
 const std::string& FlagBase::display_name() const {
   if (!name_.empty()) return name_;

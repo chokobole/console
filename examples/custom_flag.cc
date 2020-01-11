@@ -1,3 +1,10 @@
+// Copyright (c) 2020 The Console Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <iostream>
+
+#include "console/autocompletion.h"
 #include "console/flag.h"
 #include "console/stream.h"
 
@@ -27,6 +34,10 @@ int main(int argc, char** argv) {
       .set_name("number")
       .set_required()
       .set_help("Please input only odd numbers!");
+
+  // Uncomment if you want to generate json file used by console-autocomplete!
+  // console::Autocompletion::WriteToJson(flag_parser, "custom_flag.json");
+
   if (!flag_parser.Parse(argc, argv)) {
     {
       console::Stream stream(std::cerr);

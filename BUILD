@@ -9,6 +9,7 @@ console_cc_library(
     name = "console",
     srcs = [
         "console/animation.cc",
+        "console/autocompletion.cc",
         "console/console.cc",
         "console/flag.cc",
         "console/sgr_parameters.cc",
@@ -16,6 +17,7 @@ console_cc_library(
     ],
     hdrs = [
         "console/animation.h",
+        "console/autocompletion.h",
         "console/console.h",
         "console/export.h",
         "console/flag.h",

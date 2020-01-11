@@ -38,6 +38,7 @@ class CONSOLE_EXPORT FlagBase {
   FlagBase& set_name(absl::string_view name);
   FlagBase& set_help(absl::string_view help);
   FlagBase& set_required();
+  FlagBase& set_sequential();
 
   const std::string& short_name() const;
   const std::string& long_name() const;
@@ -46,6 +47,8 @@ class CONSOLE_EXPORT FlagBase {
 
   // Returns true if the flag was marked with required.
   bool is_required() const;
+  // Returns true if the flag was marked with sequential.
+  bool is_sequential() const;
   // Returns true |name_| was set.
   bool is_positional() const;
   // Returns true |short_name_| or |long_name_| was set.
@@ -55,6 +58,7 @@ class CONSOLE_EXPORT FlagBase {
 
  protected:
   friend class FlagParser;
+  friend class Autocompletion;
 
   // Returns |name_| if it is positional.
   // Otherwise, it returns |long_name_| if it is not empty.
@@ -75,6 +79,7 @@ class CONSOLE_EXPORT FlagBase {
   std::string name_;
   std::string help_;
   bool is_required_ = false;
+  bool is_sequential_ = false;
   bool is_set_ = false;
 };
 
@@ -175,6 +180,8 @@ class CONSOLE_EXPORT FlagParser {
   virtual std::string help_message();
 
  protected:
+  friend class Autocompletion;
+
   absl::string_view current();
   bool ConsumeEqualOrProceed(absl::string_view* arg);
   void Proceed();

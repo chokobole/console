@@ -37,7 +37,7 @@ class FlagValueTraits<
       *value = static_cast<T>(value_tmp);
       return true;
     }
-    *reason = absl::StrFormat("%s is outside of its range", input);
+    *reason = absl::StrFormat("%s is out of its range", input);
     return false;
   }
 };
@@ -60,7 +60,7 @@ class FlagValueTraits<
       *value = static_cast<T>(value_tmp);
       return true;
     }
-    *reason = absl::StrFormat("%s is outside of its range", input);
+    *reason = absl::StrFormat("%s is out of its range", input);
     return false;
   }
 };

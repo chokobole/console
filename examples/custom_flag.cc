@@ -12,24 +12,17 @@ int main(int argc, char** argv) {
   flag_parser
       .AddFlag<console::Uint16Flag>(
           [&number](absl::string_view input, std::string* reason) {
-            uint32_t n;
-            if (absl::SimpleAtoi(input, &n)) {
-              if (n > std::numeric_limits<uint16_t>::max()) {
-                *reason = absl::StrFormat("%u is out of its range", n);
-                return false;
-              }
-              if (n % 2 == 0) {
-                *reason = absl::StrFormat("%u is not a odd number", n);
-                return false;
-              } else {
-                number = n;
-                return true;
-              }
+            uint16_t n;
+            if (!console::FlagValueTraits<uint16_t>::ParseValue(input, &n,
+                                                                reason)) {
+              return false;
             }
-
-            *reason =
-                absl::StrFormat("failed to convert to number (\"%s\")", input);
-            return false;
+            if (n % 2 == 0) {
+              *reason = absl::StrFormat("%u is not a odd number", n);
+              return false;
+            }
+            number = n;
+            return true;
           })
       .set_name("number")
       .set_required()

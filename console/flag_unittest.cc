@@ -52,7 +52,7 @@ TEST(FlagTest, ParseValue) {
   EXPECT_FALSE(int16_flag.ParseValue("a", &reason));
   EXPECT_EQ(reason, "failed to convert int (\"a\")");
   EXPECT_FALSE(int16_flag.ParseValue("40000", &reason));
-  EXPECT_EQ(reason, "40000 is outside of its range");
+  EXPECT_EQ(reason, "40000 is out of its range");
   EXPECT_EQ(int16_value, 123);
 
   reason.clear();
